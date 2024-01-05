@@ -1,0 +1,9 @@
+tzdata==2023.3
+urllib3==2.1.0
+clicktzdata==2023.3
+urllib3==2.1.0
+pandas==2.1.4
+numpy==1.26.2
+requests==2.31.0
+click==8.1.7
+python-dotenv==1.0.0
