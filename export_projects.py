@@ -9,8 +9,6 @@ load_dotenv()
 
 
 
-from markup_tools import run_pandoc
-
 def export_projects():
 
     q = {"query": """
@@ -90,8 +88,6 @@ def export_projects():
 def main(output_file):
     
     projects_df = export_projects()
-
-    projects_df['ID'] = "PROJECT-" + projects_df.reset_index()['index'].astype(str)
 
     date_fields = ['startDate','targetDate','startedAt','completedAt','canceledAt']
 
