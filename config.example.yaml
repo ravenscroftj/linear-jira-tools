@@ -1,0 +1,42 @@
+# uncomment the following section if you want to only import specific teams from linear
+# this may be useful if you have lots of teams and you only care about one or two of them.
+#
+#------------------
+#
+#export_teams:
+#- Core
+#- Support
+#- Research Project 1
+#
+#------------------
+
+# The following section matches the imported issues to a specific jira projedt
+# the best strategy is to pre-create the jira project and then use the key param 
+# below to map the issues to the new empty project.
+jira_project_template:
+  description: example project description
+  key: TEST
+  name: Test Project
+  type: Software
+
+# use the following section to map Linear statuses to new jira workflow
+# you can declare issue type specific mapppings (e.g. epic) or the script
+# will fall back to using 'default' mappings. If a label can't be found in 
+# the default mapping then it will use use the value as-is.
+status_map:
+  Epic:
+    backlog: Triage
+    canceled: Cancelled
+    completed: Released
+    planned: Triage
+    started: In Progress
+  default:
+    Backlog: Delivery Backlog
+    Code Review: In Progress
+    Delivery Backlog: Delivery Backlog
+    Discovery Backlog: Discovery
+    Internal Review: In Progress
+    On Hold: Blocked
+    Prototyping & Design: Prototyping & Design
+    QC Blocked: Blocked
+    To Do: Todo
