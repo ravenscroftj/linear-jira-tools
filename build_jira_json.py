@@ -152,7 +152,9 @@ def main(issues_file, output_file, config_file, projects_file, comments_file=Non
     # if a specific set of issue ids is given, truncate the list now
     if limit_to_issue_ids:
         id_list = [x.strip() for x in limit_to_issue_ids.split(',')]
+        print(f"Limit issues to {id_list}")
         issues_df = issues_df[issues_df.ID.isin(id_list)]
+        print(f"Found {len(issues_df)} issues")
 
     projects_df = pd.read_csv(projects_file)
 
@@ -184,7 +186,7 @@ def main(issues_file, output_file, config_file, projects_file, comments_file=Non
     project_df_map={'name':'summary', 'startedAt':'started', 'id':'externalId' ,'targetDate':'duedate'}
     project_df_cols = ['status','description','summary','issueType','started', 'externalId', 'resolved','duedate']
 
-    epics = projects_df.rename(columns=project_df_map)[project_df_cols].to_dict(orient='records')
+    epics = projects_df.rename(columns=project_df_map)[project_df_cols].fillna('').to_dict(orient='records')
 
     issues_df_map = {'ID':'externalId','Title':'summary','Description':'description', 'Labels':'labels', 'Created':'created','Started':'started', 'Priority':'priority'}
     issues_df_cols = ['externalId','summary','description','reporter', 'customFieldValues','labels', 'issueType', 'created','started','resolved', 'status', 'priority', 'assignee']
@@ -193,12 +195,11 @@ def main(issues_file, output_file, config_file, projects_file, comments_file=Non
     for col in ['Completed','Canceled','Started','Created']:
         issues_df[col] = issues_df[col].str.replace(r' GMT\+0000 \(GMT\)', '', regex=True)
         issues_df[col] = pd.to_datetime(issues_df[col], format='%a %b %d %Y %H:%M:%S')
-        issues_df[col] = issues_df[col].apply(lambda x: x.strftime(date_format) if pd.notna(x) else x)
+        issues_df[col] = issues_df[col].apply(lambda x: x.strftime(date_format) if pd.notna(x) else '')
 
     issues_df['resolved'] = issues_df.apply(lambda x: set_resolved_datestamp(x, ['Canceled','Completed']), axis=1)
 
-    for col in ['Started','Created','resolved']:
-        issues_df[col].fillna('', inplace=True)
+
     
     map_issue_status = lambda row: map_status(row, 'Status', 'issueType', config['status_map'])
 
@@ -222,7 +223,7 @@ def main(issues_file, output_file, config_file, projects_file, comments_file=Non
 
     issues_df['Labels'] = issues_df.apply(map_labels, axis=1)
 
-    issues = issues_df.rename(columns=issues_df_map)[issues_df_cols].to_dict(orient='records')
+    issues = issues_df.rename(columns=issues_df_map)[issues_df_cols].fillna('').to_dict(orient='records')
 
     if comments_file is not None:
 
@@ -268,7 +269,11 @@ def main(issues_file, output_file, config_file, projects_file, comments_file=Non
 
     links = issues_df.apply(map_links, axis=1)
 
+    for col in ['Started','Created','resolved']:
+        issues_df[col].fillna('', inplace=True)
+
     json_doc['links'] = links[links.notna()].tolist()
+    
 
 
     project['issues'] = epics + issues
