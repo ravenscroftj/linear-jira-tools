@@ -29,7 +29,6 @@ def map_custom_fields(row):
 
 
 
-
 def map_labels(row):
     labels = []
 

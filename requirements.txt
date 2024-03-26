@@ -7,3 +7,5 @@ numpy==1.26.2
 requests==2.31.0
 click==8.1.7
 python-dotenv==1.0.0
+PyYAML==6.0.1
+mistletoe==1.2.1
