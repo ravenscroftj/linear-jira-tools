@@ -11,38 +11,6 @@ import pandas as pd
 from mistletoe.contrib import jira_renderer
 
 tqdm.pandas()
-# # Function to run shell command on each description
-
-# #LUA_PATH = os.path.join(os.path.dirname(__file__), "jira.lua")
-
-# def run_pandoc(description):
-
-#     try:
-
-#         if pd.isna(description):
-#             return description
-
-
-#         # Running the pandoc command with the description as input
-
-#         result = subprocess.run(['pandoc', '--to', LUA_PATH, '-o', '-'], 
-#                                 input=description, text=True, capture_output=True)
-
-#         # Return the stdout if the command was successful
-
-#         if result.returncode == 0:
-
-#             return result.stdout
-
-#         else:
-
-#             return f"Error: {result.stderr}"
-
-
-#     except Exception as e:
-
-#         return str(e)
-
 
 def render_jira(body):
     return mistletoe.markdown(body, jira_renderer.JIRARenderer)
