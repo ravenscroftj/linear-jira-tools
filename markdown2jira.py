@@ -5,38 +5,48 @@ import numpy as np
 from tqdm.auto import tqdm
 import pandas as pd
 
+import mistletoe
+import pandas as pd
+
+from mistletoe.contrib import jira_renderer
+
 tqdm.pandas()
-# Function to run shell command on each description
+# # Function to run shell command on each description
 
-LUA_PATH = os.path.join(os.path.dirname(__file__), "jira.lua")
+# #LUA_PATH = os.path.join(os.path.dirname(__file__), "jira.lua")
 
-def run_pandoc(description):
+# def run_pandoc(description):
 
-    try:
+#     try:
 
-        if pd.isna(description):
-            return description
-
-
-        # Running the pandoc command with the description as input
-
-        result = subprocess.run(['pandoc', '--to', LUA_PATH, '-o', '-'], 
-                                input=description, text=True, capture_output=True)
-
-        # Return the stdout if the command was successful
-
-        if result.returncode == 0:
-
-            return result.stdout
-
-        else:
-
-            return f"Error: {result.stderr}"
+#         if pd.isna(description):
+#             return description
 
 
-    except Exception as e:
+#         # Running the pandoc command with the description as input
 
-        return str(e)
+#         result = subprocess.run(['pandoc', '--to', LUA_PATH, '-o', '-'], 
+#                                 input=description, text=True, capture_output=True)
+
+#         # Return the stdout if the command was successful
+
+#         if result.returncode == 0:
+
+#             return result.stdout
+
+#         else:
+
+#             return f"Error: {result.stderr}"
+
+
+#     except Exception as e:
+
+#         return str(e)
+
+
+def render_jira(body):
+    return mistletoe.markdown(body, jira_renderer.JIRARenderer)
+
 
 
 @click.command()
@@ -51,7 +61,7 @@ def main(input_file, output_file, target_column):
     if target_column not in df:
         raise Exception(f'The column {target_column} does not exist in the csv {input_file}')
     
-    df[target_column] = df[target_column].progress_apply(run_pandoc)
+    df[target_column] = df[target_column].progress_apply(render_jira)
 
     df.to_csv(output_file, index=False)
 
